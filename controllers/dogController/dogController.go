@@ -32,6 +32,7 @@ func GetOneDog(w http.ResponseWriter, r *http.Request) {
 		}
 
 		res, _ := json.Marshal(apiError)
+		w.WriteHeader(400)
 		w.Write(res)
 		return
 	}
@@ -39,13 +40,14 @@ func GetOneDog(w http.ResponseWriter, r *http.Request) {
 	dog, err := services.GetOneDog(index)
 	if err != nil {
 		res, _ := json.Marshal(err)
+		w.WriteHeader(400)
 		w.Write(res)
 	} else {
 		res, err := json.Marshal(dog)
 		if err != nil {
 			fmt.Printf("error in marshall: %s", err)
 		}
-
+		w.WriteHeader(200)
 		w.Write(res)
 	}
 

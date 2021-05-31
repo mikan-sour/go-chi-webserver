@@ -6,7 +6,7 @@ import (
 	"github.com/jedzeins/go-chi-webserver/controllers/marco"
 )
 
-func doURLMappings(router *chi.Mux) {
+func DoURLMappings(router *chi.Mux) {
 	router.Get("/marco", marco.Marco)
 	router.Get("/dogs", dogController.GetDogs)
 	router.Get("/dogs/{index}", dogController.GetOneDog)

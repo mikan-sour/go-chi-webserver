@@ -14,7 +14,7 @@ const (
 func StartChiApp() {
 
 	router := chi.NewRouter()
-	doURLMappings(router)
+	DoURLMappings(router)
 
 	fmt.Printf("serving on port %s\n", port)
 	http.ListenAndServe(port, router)
