@@ -11,11 +11,13 @@ const (
 	port = ":8080"
 )
 
-func StartChiApp() {
+func StartChiApp() *chi.Mux {
 
 	router := chi.NewRouter()
 	DoURLMappings(router)
 
 	fmt.Printf("serving on port %s\n", port)
 	http.ListenAndServe(port, router)
+
+	return router
 }

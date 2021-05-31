@@ -1,4 +1,4 @@
-package services
+package dogService
 
 import (
 	"net/http"

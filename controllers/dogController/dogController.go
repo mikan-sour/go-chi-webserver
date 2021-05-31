@@ -3,7 +3,7 @@ package dogController
 import (
 	"github.com/go-chi/chi/v5"
 	"github.com/jedzeins/go-chi-webserver/domains"
-	"github.com/jedzeins/go-chi-webserver/services"
+	"github.com/jedzeins/go-chi-webserver/services/dogService"
 
 	"encoding/json"
 	"fmt"
@@ -12,7 +12,7 @@ import (
 )
 
 func GetDogs(w http.ResponseWriter, r *http.Request) {
-	dogs := services.GetDogs()
+	dogs := dogService.GetDogs()
 
 	res, err := json.Marshal(dogs)
 	if err != nil {
@@ -37,7 +37,7 @@ func GetOneDog(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	dog, err := services.GetOneDog(index)
+	dog, err := dogService.GetOneDog(index)
 	if err != nil {
 		res, _ := json.Marshal(err)
 		w.WriteHeader(400)
