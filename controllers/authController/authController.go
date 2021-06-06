@@ -2,53 +2,63 @@ package authController
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
-	"time"
+	"strings"
 
-	"github.com/form3tech-oss/jwt-go"
 	"github.com/jedzeins/go-chi-webserver/domains"
 	"github.com/jedzeins/go-chi-webserver/services/authService"
+	"github.com/jedzeins/go-chi-webserver/utils/authUtils"
 )
 
-func TestJWT(w http.ResponseWriter, r *http.Request) {
+func NewJWT(w http.ResponseWriter, r *http.Request) {
 
-	claims := domains.UserClaims{
-		StandardClaims: jwt.StandardClaims{
-			Id:        "jedzeins",
-			IssuedAt:  time.Now().Unix(),
-			ExpiresAt: time.Now().Add(time.Minute * 5).Unix(),
-		},
-		SessionId: 123,
+	var mockDBResponse = domains.UserDBResponse{
+		UserName:     "jedzeins",
+		TokenVersion: 1,
 	}
-	token, err := authService.CreateToken(&claims)
+
+	claims, err := authService.CreateClaims(mockDBResponse)
+	if err != nil {
+		fmt.Printf("error in the create claims func: %w", err)
+	}
+
+	token, err := authService.CreateToken(claims)
 
 	if err != nil {
 		errString := fmt.Sprintf("error running service: %s", err)
 		w.Write([]byte(errString))
 		return
 	}
+
+	authUtils.ReturnAccessTokenCookie(w, token)
 
 	w.Write([]byte(token))
 }
 
 func ParseJWT(w http.ResponseWriter, r *http.Request) {
 
-	claims := domains.UserClaims{
-		StandardClaims: jwt.StandardClaims{
-			Id:        "jedzeins",
-			IssuedAt:  time.Now().Unix(),
-			ExpiresAt: time.Now().Add(time.Minute * 5).Unix(),
-		},
-		SessionId: 123,
-	}
-	token, err := authService.CreateToken(&claims)
+	tokenUnformatted := r.Header.Get("Authorization")
 
-	if err != nil {
-		errString := fmt.Sprintf("error running service: %s", err)
-		w.Write([]byte(errString))
+	if tokenUnformatted == "" {
+		err := errors.New("no authorization token provided")
+		errRes := domains.AuthError{
+			Error:      fmt.Sprintf("Error: %s", err),
+			StatusCode: http.StatusUnauthorized,
+		}
+
+		res, err := json.Marshal(errRes)
+		if err != nil {
+			panic(err)
+		}
+
+		w.WriteHeader(401)
+		w.Write(res)
 		return
 	}
+
+	token := strings.Split(r.Header.Get("Authorization"), " ")[1]
 
 	parsed, err := authService.ParseToken(token)
 	if err != nil {

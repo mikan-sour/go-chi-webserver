@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	port = ":8080"
+	port = ":7070"
 )
 
 func StartChiApp() *chi.Mux {

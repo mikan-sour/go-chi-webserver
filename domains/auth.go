@@ -7,9 +7,20 @@ import (
 	"github.com/form3tech-oss/jwt-go"
 )
 
+type UserDBResponse struct {
+	UserName     string
+	TokenVersion int
+}
+
 type UserClaims struct {
 	jwt.StandardClaims
-	SessionId int64
+	SessionId    int64
+	TokenVersion int
+}
+
+type AuthError struct {
+	StatusCode int    `json:"statusCode"`
+	Error      string `json:"error"`
 }
 
 func (u *UserClaims) Valid() error {
